@@ -14,7 +14,7 @@ library(svDialogs) # pop out box for user input
     KB <- 1.38065e-23 # J/K
     k <- 0
     
-for (freq in seq(1000,1000000,by = 10000)){
+for (freq in seq(1000,1010000,by = 10000)){
     k<-k+1
     Rcnm <-15.4/2
     Rc <- Rcnm*1e-9  # m
@@ -32,7 +32,7 @@ for (freq in seq(1000,1000000,by = 10000)){
     
     TBbyTao <- which(abs(round(freqRelaxation-freq,0))<1)
     #########################################
-    fe <- 1.7e-5
+    #fe <- 8e-6
     
 
     W <- 2*pi*freq
