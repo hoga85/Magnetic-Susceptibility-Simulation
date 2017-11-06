@@ -50,7 +50,8 @@ for (freq in seq(1,1000000,by = 10000)){
     lines(TFe, X.Re, col = "green")
 
     grid()
-    Vline <- which(X.im==max(X.im))
+    Vline <- TFe[which(X.im==max(X.im))]
+    abline(h=max(X.im))
     abline(v = Vline)
     legend(400,0.8, c("Absolute Value of X",
                       "Real Susceptibility, X'",
