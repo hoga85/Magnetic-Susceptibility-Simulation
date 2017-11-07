@@ -2,70 +2,36 @@
 rm(list=ls()) 
 library(stats)
 library(svDialogs) # pop out box for user input
+source("relaxationTime.R")
+source("susceptibility.R")
+source("plotXvsT.R")
 
 ############################
 ## The rationale of the simulation is that the static susceptibility should be related to the relaxation time.
 ## Because the relaxation time is similar to the susceptibility, they both indicate how easy the magnetic dipolar can be rotated. 
 ############################
 
-
+#---------- Relaxation Time of MNPs -------------#
     Tao0 <- 2e-11 # second
-    Keff <- 14000 # J/m3
+    Keff <- 14000 # Anisotropy constant: J/m3
     KB <- 1.38065e-23 # J/K
-    k <- 0
+    Rcnm <-15.4/2 # what is the diameter you want to simulate?
+    Rc <- Rcnm*1e-9  # m # core radius
+    RH <- Rc+5.5e-9 # m #hydrolic radius
+    Vc <- (4/3)*pi*(Rc^3) 
+    n <- 0.1 # Pas = j.s/m3 # viscosity
     
-for (freq in seq(1000,1010000,by = 10000)){
-    k<-k+1
-    Rcnm <-15.4/2
-    Rc <- Rcnm*1e-9  # m
-    RH <- Rc+5.5e-9 # m
-    Vc <- (4/3)*pi*(Rc^3)
-    TFe <- 5:600  # K
-    n <- 0.1 # Pas = j.s/m3
+    #-------Temperature Range------#
+    TFe <- 5:600  # K # The temperature range of MNPs
+    Relaxation <- relaxationTime(Tao0,Keff,Vc,KB,TFe,n,RH)
     
-    fNeel <- (1/(2*pi*Tao0))* exp((-Keff*Vc)/(KB*TFe))
-      TaoNeel <- 1/((2*pi)*fNeel)
-    fBrown <- (KB*TFe)/(8*(pi^2)*n*(RH^3))                 
-      TaoBrown <- 1/((2*pi)*fBrown)
-      Tao <-1/((1/TaoBrown)+(1/TaoNeel))
-    freqRelaxation <- 1/((2*pi)*Tao)
+    Tao <- Relaxation$Tao
     
-    TBbyTao <- which(abs(round(freqRelaxation-freq,0))<1)
-    #########################################
-    #fe <- 8e-6
     
-
-    W <- 2*pi*freq
-    
-    X.Re<- 1/(1+(Tao*W)^2)#*(1-(fe*TFe^2))
-    X.im<- ((Tao*W)/(1+(Tao*W)^2))#* (1-(fe*TFe^2))
-    X.abs <- sqrt(X.Re^2 +X.im^2)
-
-
-    plot(TFe,X.abs,
-    xlab = "Temperature of Magnetic Material",
-    ylab = "The amplitude of susceptibility")
-    
-    lines(TFe, X.im, col = "red")
-    lines(TFe, X.Re, col = "green")
-
-    grid()
-    Vline <- TFe[which(X.im==max(X.im))]
-    abline(h=max(X.im))
-    abline(v = Vline)
-    legend(400,0.8, c("Absolute Value of X",
-                      "Real Susceptibility, X'",
-                      "Imaginary Susceptibility, X''"),
-           lty=c(3,1,1),
-           lwd=c(2.5,1.5,1.5),col=c("black","Green","red"))
-
-    text(480,0.4, paste0("Applied Frequency is: ", 
-                          toString(freq/1000),
-                          " kHz"))
-    text(480,0.3, paste0("Blocking Temperature is: ", 
-                         toString(Vline),
-                         " K"))
-    
+#---------- Susceptibility -------------#
+for (freq in seq(1000,1000000,by = 1000)){
+    X <- susceptibility(freq,Tao)
+    plotXvsT(TFe,X)
     print(freq)
     Sys.sleep(0.1)
 }
