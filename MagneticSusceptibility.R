@@ -2,9 +2,9 @@
 rm(list=ls()) 
 library(stats)
 library(svDialogs) # pop out box for user input
-source("relaxationTime.R")
-source("susceptibility.R")
-source("plotXvsT.R")
+source("Rlib/relaxationTime.R")
+source("Rlib/susceptibility.R")
+source("Rlib/plotXvsT.R")
 
 ############################
 ## The rationale of the simulation is that the static susceptibility should be related to the relaxation time.
